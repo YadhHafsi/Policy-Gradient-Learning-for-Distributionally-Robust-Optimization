@@ -1,7 +1,5 @@
 r"""Robust Actor--Critic Gradient Algorithm (Algorithm 1) -- tabular regime.
 
-Reference implementation of Algorithm 1 of Hafsi, Mekkaoui, Pham, Yan,
-*Policy Gradient Learning for Distributionally Robust Optimization*.
 On finite :math:`\mathcal X, \mathcal A` we use the time-indexed tabular
 softmax policy
 
