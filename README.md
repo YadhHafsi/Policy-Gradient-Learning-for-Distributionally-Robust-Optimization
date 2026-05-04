@@ -2,10 +2,6 @@
 
 Reference implementation of **Algorithm 1** of
 
-> Hafsi, Mekkaoui, Pham, Yan.
-> *Policy Gradient Learning for Distributionally Robust Optimization.*
-> Under review.
-
 Every figure and table of Sections 4.1–4.3 and Appendix C.1 is
 reproduced by [`notebooks/experiments.ipynb`](notebooks/experiments.ipynb).
 All plots are saved to `figures/` as Type-42 TrueType `.pdf` and `.png`.
