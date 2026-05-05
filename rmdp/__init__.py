@@ -1,9 +1,4 @@
-r"""Policy Gradient Learning for Distributionally Robust Optimization.
-
-Reference implementation of Algorithm 1 of
-
-    Hafsi, Mekkaoui, Pham, Yan.
-    *Policy Gradient Learning for Distributionally Robust Optimization.*
+r"""Robust Actor-Critic Learning under Distributional Uncertainty.
 
 The package is organised one paper-object per file:
 
