@@ -1,6 +1,6 @@
 # Policy Gradient Learning for Distributionally Robust Optimization
 
-Reference implementation of **Algorithm 1** of
+Reference implementation of **Algorithm 1** of https://arxiv.org/pdf/2606.27610
 
 Every figure and table of Sections 4.1–4.3 and Appendix C.1 is
 reproduced by [`notebooks/experiments.ipynb`](notebooks/experiments.ipynb).
