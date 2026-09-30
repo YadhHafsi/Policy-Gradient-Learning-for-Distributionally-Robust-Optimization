@@ -1,6 +1,6 @@
 r"""KL-robust backward induction (ambiguity-set comparison).
 
-Donsker--Varadhan dual of the KL ball
+Dual of the KL ball
 
 .. math::
 
@@ -10,7 +10,7 @@ Donsker--Varadhan dual of the KL ball
         -\beta\,\log\mathbb E^{\mathbb P^{0}}\!\bigl[e^{-Z/\beta}\bigr]
         -\beta\,\eta\Bigr\}.
 
-Used in the supply-chain experiment (Section 4.2) to contrast the
+Used in the supply-chain experiment (Section 4.1.2) to contrast the
 Wasserstein-robust value function against the KL-robust one.
 """
 
@@ -23,7 +23,7 @@ import numpy as np
 
 def _kl_inner(Z: np.ndarray, P0: np.ndarray, eta: float,
               beta_grid: np.ndarray) -> np.ndarray:
-    r"""Row-wise KL infimum along the last axis via Donsker--Varadhan.
+    r"""Row-wise KL infimum along the last axis via its dual.
 
     Evaluates, for each row of ``Z``,
     :math:`\sup_{\beta}\{-\beta\log\mathbb E^{\mathbb P^{0}}[e^{-Z/\beta}]-\beta\eta\}`.

@@ -1,4 +1,4 @@
-r"""Robust Linear-Quadratic control environment (Section 4.3 of the paper).
+r"""Robust Linear-Quadratic control environment (Section 4.1.3).
 
 Dynamics :math:`X_{t+1}=AX_{t}+Bu_{t}+\Xi w_{t}` with an empirical
 reference noise measure :math:`\nu=\tfrac{1}{N}\sum_{i}\delta_{\hat w^{(i)}}`.
@@ -32,13 +32,13 @@ class LQInstance:
 
 
 def toy_1d_instance(seed: int = 0) -> LQInstance:
-    r"""Scalar LQ benchmark of Section 4.3 (:math:`d=m=k=1`).
+    r"""Scalar LQ benchmark of Section 4.1.3 (:math:`d=m=k=1`).
 
     Dynamics :math:`X_{t+1}=0.9X_{t}+u_{t}+w_{t}`, stage cost
     :math:`x^{2}+u^{2}`, terminal cost :math:`2x^{2}`, horizon
     :math:`T=10`, empirical reference noise with :math:`N=30` atoms.
-    With :math:`\Xi=1,\,P_{T}=2` the Kim--Yang Riccati recursion is
-    PSD-valid provided :math:`\lambda\ge 3`.
+    With :math:`\Xi=1,\,P_{T}=2` the Riccati recursion of Proposition 4.1
+    requires :math:`\lambda>2`.
     """
     rng = np.random.default_rng(seed)
     A   = np.array([[0.9]]);  B   = np.array([[1.0]])

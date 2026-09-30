@@ -1,4 +1,4 @@
-"""Self-exciting multi-armed bandits (Appendix C.1)."""
+"""Self-exciting multi-armed bandits (Appendix D.1)."""
 
 from __future__ import annotations
 

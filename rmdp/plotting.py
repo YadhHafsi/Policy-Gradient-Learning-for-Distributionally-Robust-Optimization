@@ -2,7 +2,7 @@ r"""Publication-quality matplotlib defaults.
 
 Every figure is saved as ``.pdf`` (Type-42 TrueType fonts) and ``.png``
 (for quick inspection). The figure sizing uses the standard 5.5-inch
-textwidth and the Wong (2011) colour-blind palette: the first four entries
+textwidth and a colour-blind-friendly palette: the first four entries
 remain distinguishable under grayscale.
 """
 
@@ -73,7 +73,7 @@ def paper_style():
         yield
 
 
-# Wong (2011) colour-blind-friendly palette.
+# Colour-blind-friendly palette.
 PALETTE = {
     "blue":   "#0072B2",
     "orange": "#E69F00",

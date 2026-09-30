@@ -1,6 +1,6 @@
-r"""Kim--Yang robust Riccati recursion (Proposition 4.1 of the paper).
+r"""Robust Riccati recursion (Proposition 4.1).
 
-For the Wasserstein-penalty LQ problem of Section 4.3,
+For the Wasserstein-penalty LQ problem of Section 4.1.3,
 
 .. math::
 
@@ -11,8 +11,8 @@ For the Wasserstein-penalty LQ problem of Section 4.3,
         \,\Big|\,X_t=x\Bigr],
 
 let :math:`\Phi:=BR^{-1}B^{\top}-\lambda^{-1}\Xi\Xi^{\top}`.  Under
-:math:`\lambda>\bar\lambda_t:=\lambda_{\max}(\Xi^{\top}\Pi_{t+1}\Xi)`
-(equivalently :math:`\Phi\succeq 0`), the robust value is quadratic in
+:math:`\lambda>\bar\lambda_t:=\lambda_{\max}(\Xi^{\top}\Pi_{t}\Xi)` for all
+:math:`t\ge 1`, the robust value is quadratic in
 :math:`x` and satisfies :math:`V_t(x)=x^{\top}\Pi_t x+2 r_t^{\top}x+z_t`
 with :math:`u_t^{\star}(x)=K_t x+L_t` given by the recursion below.
 """

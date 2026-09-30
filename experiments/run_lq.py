@@ -1,11 +1,11 @@
-"""Robust Linear-Quadratic control (Section 4.3 of the paper).
+"""Robust Linear-Quadratic control (Section 4.1.3).
 
 Two modes:
 
-* ``--mode riccati`` — Kim--Yang closed form (Proposition 4.1) on the 2-D
-  toy instance for a single fixed :math:`\\lambda`.  Reference for Figure 3.
+* ``--mode riccati`` — closed form of Proposition 4.1 on the scalar
+  instance for a single fixed :math:`\\lambda`.
 * ``--mode grid``    — Discrete-adversary grid solver on the scalar toy
-  instance, paired with the learned Algorithm 1 policy.  Reference for
+  instance, paired with the learned Algorithm 2 policy.  Reference for
   Figure 4.
 """
 
@@ -26,7 +26,7 @@ from rmdp.lq_actor_critic import LQACConfig, LQRobustActorCritic
 
 
 def run_riccati(lam: float, outdir: str) -> None:
-    # Scalar 1-D instance of Section 4.3: Xi = 1, P_T = 2 -> require lam >= 3.
+    # Scalar instance of Section 4.1.3: Xi = 1, P_T = 2 -> Proposition 4.1 needs lam > 2.
     inst = lq_env.toy_1d_instance(seed=0)
     sol = lq_riccati.robust_riccati(inst.to_riccati(), lam=lam)
     xs = np.linspace(-3.0, 3.0, 121).reshape(-1, 1)

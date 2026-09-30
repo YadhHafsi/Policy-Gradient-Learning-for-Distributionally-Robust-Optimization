@@ -1,4 +1,4 @@
-r"""Coin-toss robust MDP (Section 4.1).
+r"""Coin-toss robust MDP (Section 4.1.1).
 
 State :math:`X_{t}\in\{0,\dots,n\}` — number of heads in a block of
 :math:`n` Bernoulli trials. Actions :math:`a\in\{-1,0,+1\}` (bet-lower,

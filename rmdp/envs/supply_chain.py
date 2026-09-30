@@ -1,4 +1,4 @@
-r"""Supply-chain (inventory) robust MDP — Section 4.2.
+r"""Supply-chain (inventory) robust MDP (Section 4.1.2).
 
 State :math:`X_{t}\in\{0,\dots,n\}` is on-hand inventory, action
 :math:`a\in\{0,\dots,n\}` is the order quantity. With post-order
@@ -30,7 +30,7 @@ import numpy as np
 @dataclass
 class SupplyChainSpec:
     n: int   = 10
-    T: int   = 1
+    T: int   = 5
     h: float = 1.0       # holding cost
     p: float = 3.0       # shortage cost
     k: float = 2.0       # fixed ordering cost

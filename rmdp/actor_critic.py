@@ -1,4 +1,4 @@
-r"""Robust Actor--Critic Gradient Algorithm (Algorithm 1) -- tabular regime.
+r"""Robust Actor--Critic Gradient Algorithm (Algorithm 2, Section 3.5.1) -- tabular regime.
 
 On finite :math:`\mathcal X, \mathcal A` we use the time-indexed tabular
 softmax policy
@@ -8,9 +8,10 @@ softmax policy
     \pi^{\theta}_t(x, a) \;=\;
     \frac{\exp(\theta_{t,x,a})}{\sum_{a'}\exp(\theta_{t,x,a'})}.
 
-By the remark following Algorithm 1, the parametric critics
-:math:`V_{\psi,t}, U_{\xi,t}` collapse to direct tables in this regime
-and the regressions of Steps 2 and 5 become exact assignments. The score
+By Remark 3.26(3), the parametric critics :math:`V_{\psi,t}, U_{\xi,t}`
+collapse to direct tables in this regime, the regressions of lines 5 and 10
+become exact assignments, and sample means are replaced by exact
+expectations under :math:`\mathbb P^0`. The score
 is block-diagonal in :math:`(t, x)`:
 
 .. math::
@@ -19,18 +20,18 @@ is block-diagonal in :math:`(t, x)`:
     \;=\; \mathbf 1_{\{t'=t,\,x'=x\}}\,
           \bigl(\mathbf 1_{\{a=b\}} - \pi^{\theta}_t(x, b)\bigr).
 
-Algorithm 1 -- line by line in :func:`backward_pass`:
+Algorithm 2 -- line by line:
 
 ============= =========================================================
 Paper line    Code
 ============= =========================================================
-Init.         ``V[T] = g``,  ``U[T] = 0``
-Step 1        :func:`rmdp.duality.robust_continuation`
-Step 2        ``V[t] = E_{a~pi_t}[ G_hat ]``                  (tabular)
-Step 3        :func:`rmdp.duality.transport_indices`
-Step 4        ``grad_G[t] = E_{X~P0}[ U[t+1, y_star(X)] ]``   (tabular)
-Step 5        ``U[t] = E_{a~pi_t}[ G_hat * grad log pi + grad_G ]``
-Actor update  ``theta <- theta + eta * mu0^T U[0]``
+1             ``V[T] = g``,  ``U[T] = 0``
+3--4          :func:`rmdp.duality.robust_continuation`
+5             ``V[t] = E_{a~pi_t}[ G_hat ]``                  (tabular)
+6             :func:`rmdp.duality.transport_indices`
+7--8          ``grad_G[t] = E_{X~P0}[ U[t+1, y_star(X)] ]``   (tabular)
+9--10         ``U[t] = E_{a~pi_t}[ G_hat * grad log pi + grad_G ]``
+11            ``theta <- Proj_Theta(theta + eta * mu0^T U[0])``  (:func:`run_actor_critic`)
 ============= =========================================================
 """
 
@@ -57,7 +58,7 @@ def greedy_actions(theta: np.ndarray) -> np.ndarray:
 
 @dataclass
 class ACConfig:
-    """Hyper-parameters of Algorithm 1 (tabular regime)."""
+    """Hyper-parameters of Algorithm 2 (tabular regime)."""
     eps:       float = 1.0      # Wasserstein radius eps
     q:         int   = 1        # ground-cost exponent: c(x,y) = |x-y|^q
     lam_max:   float = 50.0     # dual-multiplier upper bound Lambda
@@ -67,6 +68,7 @@ class ACConfig:
     seed:      int   = 0
     log_every: int   = 50
     use_adam:  bool  = True     # Adam preconditioner on the actor ascent direction
+    B:         Optional[float] = None  # project theta onto [-B, B]^d (Remark 3.26(1)); None = no projection
 
 
 class _Adam:
@@ -92,7 +94,7 @@ def backward_pass(
     cost:     np.ndarray,    # (|X|, |X|)          -- c(x, y) = |x-y|^q
     cfg:      ACConfig,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    r"""Single backward sweep of Algorithm 1 (Steps 1--5).
+    r"""Single backward sweep of Algorithm 2 (lines 1--10).
 
     Returns ``(V, U)`` with ``V[t, x] = V_t^{theta}(x)`` and
     ``U[t, x] = grad_theta V_t^{theta}(x)`` flattened along
@@ -102,31 +104,31 @@ def backward_pass(
     pi      = softmax(theta, axis=-1)
     d_theta = T * n_x * n_a
 
-    # Initialisation -- V_T(x) = g(x), U_T(x) = 0  (line 2 of Algorithm 1).
+    # Initialisation -- V_T(x) = g(x), U_T(x) = 0  (line 1).
     V = np.zeros((T + 1, n_x));            V[T] = terminal
     U = np.zeros((T + 1, n_x, d_theta))
 
     for t in reversed(range(T)):
-        # Step 1 -- robust continuation G_hat_t(x, a) and dual maximiser lambda*.
+        # Lines 3--4 -- robust continuation G_hat_t(x, a) and dual maximiser lambda*.
         G_hat, lam_star = robust_continuation(
             reward[t], V[t + 1], P0[t], cost,
             eps=cfg.eps, q=cfg.q, lam_max=cfg.lam_max, n_lam=cfg.n_lam,
         )
 
-        # Step 2 -- V-critic regression. Tabular collapse: V[t] = E_a[ G_hat ].
+        # Line 5 -- V-critic regression. Tabular collapse: V[t] = E_a[ G_hat ].
         V[t] = (pi[t] * G_hat).sum(axis=1)
 
-        # Step 3 -- worst-case transport index
+        # Line 6 -- worst-case transport index
         # y*(X) in argmin_y { f(t, x, a, y) + V_{t+1}(y) + lambda* c(X, y) }.
         inner  = (reward[t] + V[t + 1][None, None, :]).reshape(n_x * n_a, n_x)
         y_star = transport_indices(inner, cost, lam_star.reshape(-1)
                                    ).reshape(n_x, n_a, n_x)
 
-        # Step 4 -- gradient of robust continuation
+        # Lines 7--8 -- gradient of robust continuation
         # grad_G(x, a) = E_{X ~ P^0}[ U_{t+1}( y*(X) ) ].
         grad_G = np.einsum("xay,xayd->xad", P0[t], U[t + 1][y_star])
 
-        # Step 5 -- U-critic regression. Target
+        # Lines 9--10 -- U-critic regression. Target
         # z_t(x, a) = G_hat(x, a) * grad log pi_t(x, a) + grad_G(x, a),
         # then U[t, x] = E_{a ~ pi_t}[ z_t(x, a) ]. For the softmax score
         # E_a[ G_hat * grad log pi(x, ·) ] populates only the (t, x)-block
@@ -149,7 +151,7 @@ def run_actor_critic(
     cfg:      ACConfig,
     T:        Optional[int] = None,
 ) -> Tuple[np.ndarray, List[dict]]:
-    r"""Outer loop of Algorithm 1.
+    r"""Outer loop of Algorithm 2 (line 11).
 
     The actor update
     :math:`\theta \leftarrow \theta + \eta_{\theta}\,\mathbb E_{X_0\sim\mu_0}
@@ -176,6 +178,8 @@ def run_actor_critic(
         grad_J = (mu0 @ U[0]).reshape(T_, n_x, n_a)
         theta  = theta + (adam.step(grad_J) if adam is not None
                           else cfg.lr * grad_J)
+        if cfg.B is not None:
+            theta = np.clip(theta, -cfg.B, cfg.B)
 
         if it % cfg.log_every == 0 or it == cfg.n_outer - 1:
             history.append({"iter": it, "J": float(mu0 @ V[0]),

@@ -1,4 +1,4 @@
-"""Supply-chain experiment (Section 4.2)."""
+"""Supply-chain experiment (Section 4.1.2)."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from rmdp.envs import supply_chain
 
 
 def run(eps: float, outer: int, seed: int, outdir: str) -> None:
-    spec = supply_chain.SupplyChainSpec(n=10, T=1, h=1.0, p=3.0, k=2.0)
+    spec = supply_chain.SupplyChainSpec(n=10, T=5, h=1.0, p=3.0, k=2.0)
     P0, rew, term, cost, mu0 = supply_chain.build(spec)
 
     V_ex, _, pi_ex = exact_dp.solve_robust_dp(rew, term, P0, cost,

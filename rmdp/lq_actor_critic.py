@@ -1,9 +1,9 @@
-r"""Algorithm 1 -- scalar robust Linear-Quadratic control (Section 4.3).
+r"""Algorithm 2 -- scalar robust Linear-Quadratic control (Section 4.1.3).
 
 Dynamics :math:`X_{t+1} = A X_t + B u_t + \Xi w_t` with reference noise
 :math:`\nu = \tfrac1N \sum_{i=1}^N \delta_{\hat w^{(i)}}` (empirical). The
 Wasserstein adversary redistributes mass among the :math:`N` empirical
-atoms, so the robust Bellman step of Algorithm 1 specialises to a finite
+atoms, so the robust Bellman step of Algorithm 2 specialises to a finite
 dual over :math:`(\hat w^{(i)})_{i=1}^N`:
 
 with :math:`y_i = A x + B a + \Xi \hat w^{(i)}`,
@@ -48,7 +48,7 @@ _DTYPE = torch.float32
 
 
 # -------------------------------------------------------------------- #
-# Algorithm 1, Step 1 -- discrete Wasserstein dual over N atoms.       #
+# Algorithm 2, line 3 -- discrete Wasserstein dual over N atoms.       #
 # -------------------------------------------------------------------- #
 def wasserstein_dual(
     u_batch: torch.Tensor,      # (M, N) -- u_i per (x, a) row
@@ -166,7 +166,7 @@ class LQACConfig:
 # Robust actor--critic for the scalar LQ problem (d = m = k = 1).      #
 # -------------------------------------------------------------------- #
 class LQRobustActorCritic:
-    r"""Algorithm 1 specialised to the scalar robust LQ problem."""
+    r"""Algorithm 2 specialised to the scalar robust LQ problem."""
 
     def __init__(self, inst: LQInstance, cfg: LQACConfig = LQACConfig()):
         assert inst.A.shape == (1, 1), "scalar LQ only"
@@ -255,26 +255,26 @@ class LQRobustActorCritic:
             rwd    = -(self._Q * x_r ** 2 + self._R * a_r ** 2)       # f(x, a, ·)
             u_vec  = rwd[:, None] + V_next
 
-            # Step 1 -- discrete Wasserstein dual over the N atoms.
+            # Line 3 -- discrete Wasserstein dual over the N atoms.
             with torch.no_grad():
                 G_flat, i_star = wasserstein_dual(
                     u_vec, self.p0, self.C, self.eps_q, n_lam=cfg.n_lam)
 
-            # Steps 3--4 -- continuation gradient ∇_θ Ĝ_t(x, a).
+            # Lines 6--8 -- continuation gradient ∇_θ Ĝ_t(x, a).
             with torch.no_grad():
                 y_star = y.gather(1, i_star)                          # (BS, N)
                 U_next = self._U(t + 1, y_star.reshape(-1, 1)).reshape(BS, N, self.d_theta)
                 grad_G = (self.p0[None, :, None] * U_next).sum(dim=1)
 
-            # Step 5 target  z_t = Ĝ_t · ∇log π^θ_t(x, a) + ∇_θ Ĝ_t(x, a).
+            # Line 9 target  z_t = Ĝ_t · ∇log π^θ_t(x, a) + ∇_θ Ĝ_t(x, a).
             score = self._score(x, tn, x_r, t_r, a_r).detach()
             z     = G_flat[:, None] * score + grad_G
 
             # Average S samples per state to get (B, ·) regression targets.
-            V_tgt = G_flat.reshape(B, S).mean(dim=1)                  # Step 2
-            U_tgt = z     .reshape(B, S, self.d_theta).mean(dim=1)    # Step 5
+            V_tgt = G_flat.reshape(B, S).mean(dim=1)                  # line 5
+            U_tgt = z     .reshape(B, S, self.d_theta).mean(dim=1)    # line 10
 
-            # Steps 2 & 5 -- regress V_ψ and U_ξ.
+            # Lines 5 and 10 -- regress V_ψ and U_ξ.
             x_in = x.unsqueeze(-1).detach()
             for _ in range(cfg.n_critic_steps):
                 lv = ((self.V_nets[t](x_in).squeeze(-1) - V_tgt) ** 2).mean()

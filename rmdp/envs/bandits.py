@@ -1,4 +1,4 @@
-r"""Self-exciting multi-armed bandits (Appendix C.1 of the paper).
+r"""Self-exciting multi-armed bandits (Appendix D.1).
 
 State :math:`x=(m,b)` with :math:`m\in\{-K_{\max},\dots,-1,1,\dots,K_{\max}\}`
 the signed outcome of the last stake and :math:`b\in\{0,\dots,K-1\}` the
@@ -28,7 +28,7 @@ import numpy as np
 
 @dataclass
 class BanditSpec:
-    """Self-exciting bandit parameters (paper default: Appendix C.1)."""
+    """Self-exciting bandit parameters (Appendix D.1: kappa is the paper's lambda, K_max its K_sup, arms 0-indexed)."""
     T:     int   = 5                                       # horizon
     K:     int   = 3                                       # number of arms
     K_max: int   = 2                                       # maximum stake

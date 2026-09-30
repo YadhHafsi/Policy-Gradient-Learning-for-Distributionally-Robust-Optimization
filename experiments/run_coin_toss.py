@@ -1,6 +1,6 @@
-"""Coin-toss experiment (Section 4.1).
+"""Coin-toss experiment (Section 4.1.1).
 
-Runs Algorithm 1 on the finite tabular robust MDP described in Section 4.1
+Runs Algorithm 2 on the finite tabular robust MDP described in Section 4.1.1
 and compares the learned greedy policy with the exact Wasserstein-robust DP
 benchmark. Results are saved as ``.npz`` files for use by the notebook.
 """

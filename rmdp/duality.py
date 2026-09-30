@@ -1,4 +1,4 @@
-r"""Blanchet--Murthy scalar Wasserstein dual (Theorem 1 of the paper).
+r"""Scalar Wasserstein dual (Proposition 3.4).
 
 For the Wasserstein ball :math:`\mathbb B^{\varepsilon,q}(\mathbb P^0)`
 with ground cost :math:`c(x,y)=\lVert x-y\rVert^q`,
@@ -14,12 +14,12 @@ with ground cost :math:`c(x,y)=\lVert x-y\rVert^q`,
         -\varepsilon^q\lambda\Bigr\}.
 
 In the tabular regime :math:`(-\mathcal F^\lambda(-V))(x)=\min_{y}\{V(y)+\lambda c(x,y)\}`.
-Algorithm 1 invokes:
+Algorithm 2 invokes:
 
-* :func:`robust_continuation` -- Step 1, returns
+* :func:`robust_continuation` -- lines 3--4, returns
   :math:`\widehat G_t(x,a)` and a maximiser
   :math:`\widehat\lambda_t^\star`.
-* :func:`transport_indices` -- Step 3, returns the worst-case
+* :func:`transport_indices` -- line 6, returns the worst-case
   transport indices
   :math:`y^\star(X)\in\arg\min_y\{f+V_{t+1}(y)+\lambda^\star c(X,y)\}`.
 """
@@ -53,7 +53,7 @@ def robust_continuation(
     lam_max: float = 50.0,
     n_lam:   int   = 101,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    r"""Algorithm 1, Step 1 -- tabular dual evaluation.
+    r"""Algorithm 2, lines 3--4 -- tabular dual evaluation.
 
     Returns ``(G_hat, lam_star)`` of shape ``(|X|, |A|)`` with
 
@@ -87,7 +87,7 @@ def transport_indices(
     cost:  np.ndarray,    # (|X|, |X|) -- c(X, y)
     lam:   np.ndarray,    # (B,)       -- λ*(x, a)
 ) -> np.ndarray:
-    r"""Algorithm 1, Step 3 -- tabular worst-case transport indices.
+    r"""Algorithm 2, line 6 -- tabular worst-case transport indices.
 
     Returns ``y_star`` of shape ``(B, |X|)`` with
     :math:`y^\star(X)\in\arg\min_{y\in\mathcal X}\{f+V_{t+1}(y)+\lambda^\star c(X,y)\}`.

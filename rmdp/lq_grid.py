@@ -1,5 +1,5 @@
 r"""Discrete-adversary benchmark for the robust LQ problem
-(Section 4.3 of the paper, eqs. (4.2)--(4.3)).
+(Section 4.1.3).
 
 At every :math:`(t,x)` and every candidate control :math:`u`, the robust
 Bellman operator
@@ -20,7 +20,7 @@ is evaluated through the finite-support Wasserstein dual
 
 The successor :math:`Ax+Bu+\Xi\hat w^{(i)}` is linearly interpolated onto
 the display grid before being read from :math:`V_{t+1}`.  We use the
-reward convention (``V`` is the negated cost-to-go), matching Algorithm 1.
+reward convention (``V`` is the negated cost-to-go), matching Algorithm 2.
 """
 
 from __future__ import annotations

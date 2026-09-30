@@ -7,12 +7,12 @@ Solves the dual robust Bellman recursion
     V_{T}(x) \;=\; g(x), \qquad
     V_{t}(x) \;=\; \max_{a\in A}\widehat G_{t}(x,a),
 
-where :math:`\widehat G_{t}` is the Blanchet--Murthy dual of
-:mod:`rmdp.duality`.  In the finite tabular setting the robust optimum
+where :math:`\widehat G_{t}` is the dual of :mod:`rmdp.duality`
+(Theorem 2.7, Remark 3.5).  In the finite tabular setting the robust optimum
 over randomized policies is attained by a deterministic selector at every
 :math:`(t,x)`, hence replacing :math:`\mathbb E_{a\sim\pi_{t}}` by
-:math:`\max_a` yields the exact robust value.  Used throughout the paper
-as the tabular benchmark against which Algorithm 1 is evaluated.
+:math:`\max_a` yields the exact robust value.  Used as the tabular
+benchmark against which Algorithm 2 is evaluated.
 """
 
 from __future__ import annotations
